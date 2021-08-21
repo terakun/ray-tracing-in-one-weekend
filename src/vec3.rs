@@ -1,12 +1,14 @@
-use std::ops::AddAssign;
-
-
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct Vec3 {
-    pub e : Vec<f64>,
+    pub e : [f64; 3],
 }
 
 impl Vec3 {
+    pub fn new(x:f64, y:f64, z:f64) -> Self {
+        Vec3 {
+            e : [x, y, z]
+        }
+    }
     pub fn x(&self) -> f64 { self.e[0] }
     pub fn y(&self) -> f64 { self.e[1] }
     pub fn z(&self) -> f64 { self.e[2] }
@@ -26,7 +28,7 @@ impl Vec3 {
 
     pub fn cross(u: &Vec3, v: &Vec3) -> Vec3 {
         Vec3 {
-            e: vec![
+            e: [
                 u.e[1] * v.e[2] - u.e[2] * v.e[1],
                 u.e[2] * v.e[0] - u.e[0] * v.e[2],
                 u.e[0] * v.e[1] - u.e[1] * v.e[0]
@@ -49,7 +51,7 @@ impl std::ops::Neg for Vec3 {
     type Output = Self;
     fn neg(self) -> Self::Output {
         Vec3 {
-            e: vec![-self.e[0], -self.e[1], -self.e[2]]
+            e: [-self.e[0], -self.e[1], -self.e[2]]
         }
     }
 }
@@ -65,9 +67,9 @@ impl std::ops::Add for Vec3 {
     type Output = Self;
     fn add(self, rhs: Self) -> Self::Output {
         Vec3 {
-            e:  vec![self.e[0]+rhs.e[0],
-                     self.e[1]+rhs.e[1],
-                     self.e[2]+rhs.e[2]]
+            e:  [self.e[0]+rhs.e[0],
+                 self.e[1]+rhs.e[1],
+                 self.e[2]+rhs.e[2]]
         }
     }
 }
@@ -76,9 +78,9 @@ impl std::ops::Sub for Vec3 {
     type Output = Self;
     fn sub(self, rhs: Self) -> Self::Output {
         Vec3 {
-            e:  vec![self.e[0]-rhs.e[0],
-                     self.e[1]-rhs.e[1],
-                     self.e[2]-rhs.e[2]]
+            e:  [self.e[0]-rhs.e[0],
+                 self.e[1]-rhs.e[1],
+                 self.e[2]-rhs.e[2]]
         }
     }
 }
@@ -87,9 +89,9 @@ impl std::ops::Mul for Vec3 {
     type Output = Self;
     fn mul(self, rhs: Self) -> Self::Output {
         Vec3 {
-            e:  vec![self.e[0]*rhs.e[0],
-                     self.e[1]*rhs.e[1],
-                     self.e[2]*rhs.e[2]]
+            e:  [self.e[0]*rhs.e[0],
+                 self.e[1]*rhs.e[1],
+                 self.e[2]*rhs.e[2]]
         }
     }
 }
@@ -98,9 +100,9 @@ impl std::ops::Mul<f64> for Vec3 {
     type Output = Self;
     fn mul(self, rhs: f64) -> Self::Output {
         Vec3 {
-            e:  vec![self.e[0]*rhs,
-                     self.e[1]*rhs,
-                     self.e[2]*rhs]
+            e:  [self.e[0]*rhs,
+                 self.e[1]*rhs,
+                 self.e[2]*rhs]
         }
     }
 }
