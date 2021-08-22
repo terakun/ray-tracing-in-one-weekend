@@ -7,6 +7,7 @@ mod ray;
 use ray::Ray;
 
 mod camera;
+use camera::Camera;
 
 mod hittable;
 use hittable::{Hittable};
@@ -18,32 +19,23 @@ mod sphere;
 use sphere::Sphere;
 
 mod rtweekend;
-use rtweekend::{INFINITY, PI, random};
+use rtweekend::{INFINITY, random};
 
 
-fn ray_color(r : &ray::Ray, world: &HittableList) -> Color {
-    if let Some(rec) = world.hit(&r, 0.0, INFINITY) {
-        return 0.5 * (rec.normal + Color::new(1.0, 1.0, 1.0));
+fn ray_color(r : &ray::Ray, world: &HittableList, depth: i32) -> Color {
+
+    if depth <= 0 {
+        return Color::new(0.0, 0.0, 0.0);
+    }
+    if let Some(rec) = world.hit(&r, 0.001, INFINITY) {
+        let target = rec.p + rec.normal + Vec3::random_in_hemisphere(&rec.normal);
+        let r = Ray{orig: rec.p, dir: target - rec.p};
+        return 0.5 * ray_color(&r, world, depth-1);
     }
     let unit_direction = Vec3::unit_vector(&r.direction());
     let t = 0.5 * ( unit_direction.y() + 1.0 );
     (1.0-t) * Color::new(1.0, 1.0, 1.0) + t * Color::new(0.5, 0.7, 1.0)
 }
-
-fn hit_sphere(center: &Point3, radius: f64, r: &Ray) -> f64 {
-    let oc = r.origin() - *center;
-    let a = r.direction().length_squared();
-    let half_b = Vec3::dot(&oc, &r.direction());
-    let c = oc.length_squared() - radius * radius;
-
-    let discriminant = half_b*half_b - a*c;
-    if discriminant < 0.0 {
-        -1.0
-    } else {
-        (-half_b-discriminant.sqrt()) / a
-    }
-}
-
 
 fn main() {
 
@@ -52,6 +44,7 @@ fn main() {
     let image_width = 400;
     let image_height = (image_width as f64 / aspect_ratio) as i32;
     let samples_per_pixel = 100;
+    let max_depth = 50;
 
     // World 
     let mut world = HittableList {
@@ -68,15 +61,7 @@ fn main() {
     }));
 
     // Camera
-
-    let viewport_height = 2.0;
-    let viewport_width = aspect_ratio * viewport_height;
-    let focal_length = 1.0;
-
-    let origin = Point3::new(0.0, 0.0, 0.0);
-    let horizontal = Vec3::new(viewport_width, 0.0, 0.0);
-    let vertical = Vec3::new(0.0, viewport_height, 0.0);
-    let lower_left_corner = origin - horizontal / 2.0 - vertical / 2.0 - Vec3::new(0.0,0.0, focal_length);
+    let cam = Camera::new();
 
     print!("P3\n{} {}\n255\n", image_width, image_height);
 
@@ -88,11 +73,8 @@ fn main() {
                 let u = (i as f64 + random()) / (image_width-1) as f64;
                 let v = (j as f64 + random()) / (image_height-1) as f64;
 
-                let r = Ray {
-                    orig: origin, 
-                    dir: lower_left_corner + u* horizontal + v* vertical - origin ,
-                };
-                pixel_color += ray_color(&r, &world);
+                let r = cam.get_ray(u, v);
+                pixel_color += ray_color(&r, &world, max_depth);
             }
             Color::write_color(pixel_color, samples_per_pixel);
         }

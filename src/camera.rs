@@ -1,7 +1,7 @@
 use super::vec3::{Vec3, Point3};
 use super::ray::Ray;
 
-struct Camera {
+pub struct Camera {
     origin: Point3,
     lower_left_corner: Point3,
     horizontal: Vec3,
@@ -9,7 +9,7 @@ struct Camera {
 }
 
 impl Camera {
-    fn new() -> Self {
+    pub fn new() -> Self {
         let aspect_ratio = 16.0 / 9.0;
         let viewport_height = 2.0;
         let viewport_width = aspect_ratio * viewport_height;
@@ -23,7 +23,7 @@ impl Camera {
         Camera { origin, lower_left_corner, horizontal, vertical }
     }
 
-    fn get_ray(&self, u: f64, v: f64) -> Ray {
+    pub fn get_ray(&self, u: f64, v: f64) -> Ray {
         Ray {
             orig: self.origin,
             dir: self.lower_left_corner + u * self.horizontal + v * self.vertical - self.origin,

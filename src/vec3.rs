@@ -1,4 +1,4 @@
-use super::rtweekend::clamp;
+use super::rtweekend::{clamp, random, random_range};
 
 #[derive(Clone, Copy)]
 pub struct Vec3 {
@@ -11,6 +11,45 @@ impl Vec3 {
             e : [x, y, z]
         }
     }
+
+    pub fn random() -> Self {
+        Vec3::new(
+            random(),
+            random(),
+            random()
+        )
+    }
+    pub fn random_range(min: f64, max: f64) -> Self {
+        Vec3::new(
+            random_range(min, max),
+            random_range(min, max),
+            random_range(min, max)
+        )
+    }
+
+    pub fn random_in_unit_sphere() -> Self {
+        loop {
+            let p = Vec3::random_range(-1.0, 1.0);
+            if p.length_squared() < 1.0 {
+                return p;
+            }
+        }
+
+    }
+
+    pub fn random_unit_vector() -> Self {
+        Self::unit_vector(&Self::random_in_unit_sphere())
+    }
+
+    pub fn random_in_hemisphere(normal: &Vec3) -> Self {
+        let in_unit_sphere = Vec3::random_in_unit_sphere();
+        if Vec3::dot(&in_unit_sphere, &normal) > 0.0 {
+            in_unit_sphere
+        } else {
+            -in_unit_sphere
+        }
+    }
+
     pub fn x(&self) -> f64 { self.e[0] }
     pub fn y(&self) -> f64 { self.e[1] }
     pub fn z(&self) -> f64 { self.e[2] }
@@ -154,11 +193,13 @@ impl Color {
         let g = pixel_color.y();
         let b = pixel_color.z();
 
+        // Divide the color by the number of samples and gamma-correct for gamma=2.0.
         let scale = 1.0 / samples_per_pixel as f64;
-        let r = r * scale;
-        let g = g * scale;
-        let b = b * scale;
+        let r = (r * scale).sqrt();
+        let g = (g * scale).sqrt();
+        let b = (b * scale).sqrt();
 
+        // Write the translated [0, 255] value of each color component.
         println!("{} {} {}" , (256.0 * clamp(r, 0.0, 0.999)) as i32
                             , (256.0 * clamp(g, 0.0, 0.999)) as i32
                             , (256.0 * clamp(b, 0.0, 0.999)) as i32);

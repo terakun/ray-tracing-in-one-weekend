@@ -1,5 +1,4 @@
 use rand::{Rng, thread_rng};
-use rand::distributions::Uniform;
 pub use std::f64::INFINITY;
 pub use std::f64::consts::PI;
 
