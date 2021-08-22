@@ -1,3 +1,5 @@
+use super::rtweekend::clamp;
+
 #[derive(Clone, Copy)]
 pub struct Vec3 {
     pub e : [f64; 3],
@@ -147,9 +149,18 @@ pub type Point3 = Vec3;
 pub type Color = Vec3;
 
 impl Color {
-    pub fn write_color(pixel_color : Color) {
-        println!("{} {} {}" , (255.999 * pixel_color.x()) as i32
-                            , (255.999 * pixel_color.y()) as i32
-                            , (255.999 * pixel_color.z()) as i32);
+    pub fn write_color(pixel_color : Color, samples_per_pixel: i32) {
+        let r = pixel_color.x();
+        let g = pixel_color.y();
+        let b = pixel_color.z();
+
+        let scale = 1.0 / samples_per_pixel as f64;
+        let r = r * scale;
+        let g = g * scale;
+        let b = b * scale;
+
+        println!("{} {} {}" , (256.0 * clamp(r, 0.0, 0.999)) as i32
+                            , (256.0 * clamp(g, 0.0, 0.999)) as i32
+                            , (256.0 * clamp(b, 0.0, 0.999)) as i32);
     }
 }
