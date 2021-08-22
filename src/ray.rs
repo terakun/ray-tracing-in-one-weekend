@@ -1,5 +1,5 @@
-use super::vec3::Point3;
-use super::vec3::Vec3;
+use crate::vec3::Point3;
+use crate::vec3::Vec3;
 
 pub struct Ray {
     pub orig: Point3,

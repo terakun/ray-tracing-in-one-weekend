@@ -29,5 +29,4 @@ impl Camera {
             dir: self.lower_left_corner + u * self.horizontal + v * self.vertical - self.origin,
         }
     }
-
 }

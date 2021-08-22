@@ -1,12 +1,16 @@
+use std::rc::Rc; 
 
-use super::vec3::Vec3;
-use super::vec3::Point3;
-use super::ray::Ray;
+use crate::vec3::Vec3;
+use crate::vec3::Point3;
+use crate::ray::Ray;
 
-#[derive(Clone, Copy)]
+use crate::material::Material;
+
+#[derive(Clone)]
 pub struct HitRecord {
     pub p: Point3,
     pub normal: Vec3,
+    pub mat: Rc<dyn Material>,
     pub t: f64,
     pub front_face: bool,
 }

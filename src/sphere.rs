@@ -1,12 +1,24 @@
-use super::vec3::Point3;
-use super::vec3::Vec3;
+use std::rc::Rc;
 
-use super::ray::Ray;
-use super::hittable::{HitRecord, Hittable};
+use crate::material::Material;
+use crate::vec3::{Point3, Vec3};
+use crate::ray::Ray;
+use crate::hittable::{HitRecord, Hittable};
 
 pub struct Sphere {
-    pub center: Point3, 
-    pub radius: f64,
+    center: Point3, 
+    radius: f64,
+    mat: Rc<dyn Material>,
+}
+
+impl Sphere {
+    pub fn new(c: Point3, r: f64, m: Rc<dyn Material>) -> Self {
+        Sphere {
+            center: c,
+            radius: r,
+            mat: m,
+        }
+    }
 }
 
 impl Hittable for Sphere {
@@ -37,6 +49,7 @@ impl Hittable for Sphere {
         let mut rec = HitRecord {
             p: p, 
             normal: outward_normal,
+            mat: self.mat.clone(),
             t: t,
             front_face: false,
         };

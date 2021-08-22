@@ -1,6 +1,5 @@
-use super::hittable::{HitRecord, Hittable};
-
-use super::ray::Ray;
+use crate::hittable::{HitRecord, Hittable};
+use crate::ray::Ray;
 
 pub struct HittableList {
     pub objects: Vec<Box<dyn Hittable>>,
@@ -23,7 +22,7 @@ impl Hittable for HittableList {
 
         for object in &self.objects {
             if let Some(rec) = object.hit(&r, t_min, closest_so_far) {
-                opt_rec = Some(rec);
+                opt_rec = Some(rec.clone());
                 closest_so_far = rec.t;
             }
         }
