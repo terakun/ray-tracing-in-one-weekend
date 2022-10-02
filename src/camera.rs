@@ -12,6 +12,8 @@ pub struct Camera {
     v: Vec3,
     w: Vec3,
     lens_radius: f64,
+    time0: f64,         // shutter open time
+    time1: f64,         // shutter close time
 }
 
 impl Camera {
@@ -23,6 +25,8 @@ impl Camera {
         aspect_ratio: f64,
         aperture: f64,
         focus_dist: f64,
+        time0: f64,
+        time1: f64
     ) -> Self {
         let theta = rtweekend::degrees_to_radians(vfov);
         let h = (theta / 2.0).tan();
@@ -49,6 +53,8 @@ impl Camera {
             u,
             v,
             lens_radius,
+            time0,
+            time1,
         }
     }
 
@@ -60,6 +66,7 @@ impl Camera {
             dir: self.lower_left_corner + s * self.horizontal + t * self.vertical
                 - self.origin
                 - offset,
+            tm: rtweekend::random_range(self.time0, self.time1),
         }
     }
 }

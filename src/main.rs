@@ -21,6 +21,9 @@ use hittable_list::HittableList;
 mod sphere;
 use sphere::Sphere;
 
+mod moving_sphere;
+use moving_sphere::MovingSphere;
+
 mod material;
 use material::{Dielectric, Lambertian, Metal};
 
@@ -60,17 +63,22 @@ fn random_scene() -> HittableList {
             let center = Point3::new(a as f64 + 0.9 * random(), 0.2, b as f64 + 0.9 * random());
 
             if (center - Point3::new(4.0, 0.2, 0.0)).length() > 0.9 {
-                let sphere_material: Rc<dyn Material> = if choose_mat < 0.8 {
+                let object: Box<dyn Hittable> = if choose_mat < 0.8 {
                     let albedo = Color::random() * Color::random();
-                    Rc::new(Lambertian::new(albedo))
+                    let center2 = center + Vec3::new(0.0, random_range(0.0, 0.5), 0.0);
+                    let mat = Rc::new(Lambertian::new(albedo));
+
+                    Box::new(MovingSphere::new(center, center2, 0.2, 0.0, 1.0, mat))
                 } else if choose_mat < 0.95 {
                     let albedo = Color::random_range(0.5, 1.0);
                     let fuzz = random_range(0.0, 0.5);
-                    Rc::new(Metal::new(albedo, fuzz))
+                    let mat = Rc::new(Metal::new(albedo, fuzz));
+                    Box::new(Sphere::new(center, 0.2, mat))
                 } else {
-                    Rc::new(Dielectric::new(1.5))
+                    let mat = Rc::new(Dielectric::new(1.5));
+                    Box::new(Sphere::new(center, 0.2, mat))
                 };
-                world.add(Box::new(Sphere::new(center, 0.2, sphere_material)));
+                world.add(object);
             }
         }
     }
@@ -99,10 +107,10 @@ fn random_scene() -> HittableList {
 
 fn main() {
     // Image
-    let aspect_ratio = 3.0 / 2.0;
-    let image_width = 1200;
+    let aspect_ratio = 16.0 / 9.0;
+    let image_width = 400;
     let image_height = (image_width as f64 / aspect_ratio) as i32;
-    let samples_per_pixel = 500;
+    let samples_per_pixel = 100;
     let max_depth = 50;
 
     // World
@@ -123,6 +131,8 @@ fn main() {
         aspect_ratio,
         aperture,
         dist_to_focus,
+        0.0,
+        1.0
     );
 
     print!("P3\n{} {}\n255\n", image_width, image_height);
