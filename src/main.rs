@@ -25,7 +25,7 @@ mod material;
 use material::{Dielectric, Lambertian, Metal};
 
 mod rtweekend;
-use rtweekend::{random, INFINITY, PI};
+use rtweekend::{random, INFINITY};
 
 fn ray_color(r: &ray::Ray, world: &HittableList, depth: i32) -> Color {
     if depth <= 0 {
@@ -47,7 +47,7 @@ fn ray_color(r: &ray::Ray, world: &HittableList, depth: i32) -> Color {
 fn random_scene() -> HittableList {
     let mut world = HittableList::new();
 
-    let ground_material = Rc::new(Lambertian::new(Color::new(0.5, 0.5, 0.0)));
+    let ground_material = Rc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
     world.add(Box::new(Sphere::new(
         Point3::new(0.0, -1000.0, 0.0),
         1000.0,
@@ -81,7 +81,7 @@ fn random_scene() -> HittableList {
         1.0,
         material1,
     )));
-    let material2 = Rc::new(Lambertian::new(Color::new(0.5, 0.2, 0.1)));
+    let material2 = Rc::new(Lambertian::new(Color::new(0.4, 0.2, 0.1)));
     world.add(Box::new(Sphere::new(
         Point3::new(-4.0, 1.0, 0.0),
         1.0,
@@ -100,9 +100,9 @@ fn random_scene() -> HittableList {
 fn main() {
     // Image
     let aspect_ratio = 3.0 / 2.0;
-    let image_width = 120;
+    let image_width = 1200;
     let image_height = (image_width as f64 / aspect_ratio) as i32;
-    let samples_per_pixel = 100;
+    let samples_per_pixel = 500;
     let max_depth = 50;
 
     // World
